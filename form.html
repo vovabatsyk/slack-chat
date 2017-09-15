@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Form</title>
+</head>
+<body>
+        <form method="POST" action="https://formspree.io/vovabatsyk@gmail.com">
+        <label for="client-name">Name:</label>
+        <input type="text" name="client-name"
+          id="client-name"
+          placeholder="Your name"
+           required>
+        <br>
+        <label>Email:
+            <input type="email" name="client-email"
+            placeholder="Your email"
+             required>
+        </label>
+        <br>
+        <label>Password:
+            <input type="password" name="client-password">
+        </label>
+        <br>
+        <label>Gender:</label>
+        <label>
+            <input type="radio" name="client-gender">
+            Male
+        </label>
+        <label>
+            <input type="radio" name="client-gender">
+            Female
+        </label>
+        <label>
+            <input type="radio" name="client-gender">
+            Other
+        </label>
+        <br>
+        <label>Your comment:<br>
+            <textarea></textarea>
+        </label>
+        <br>
+        <input type="submit" value="SEND!!!">
+        <input type="reset">
+         <br>
+       <label>Car plate:
+            <input type="text" name="car-plate"
+            required
+            pattern="[A-Z]{2}[0-9]{4}[A-Z]{2}"
+            placeholder="AA1234BB"
+            title="AA1234BB">
+        </label>
+    </form>
+    
+</body>
+</html>
