@@ -131,8 +131,8 @@ class Register extends React.Component {
     return (
       <Grid textAlign='center' verticalAlign='middle' className='app'>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as='h1' icon color='blue' textAlign='center'>
-            <Icon name='wechat' color='blue'></Icon>
+          <Header as='h1' icon color='orange' textAlign='center'>
+            <Icon name='wechat' color='orange'></Icon>
             Register for LiveChat
           </Header>
           <Form onSubmit={this.handleSubmit} size='large'>
@@ -182,7 +182,7 @@ class Register extends React.Component {
               ></Form.Input>
               <Button
                 fluid
-                color='blue'
+                color='orange'
                 size='large'
                 className={loading ? 'loading' : ''}
                 disabled={loading}
