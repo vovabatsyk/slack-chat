@@ -8,6 +8,8 @@ import Message from './Message'
 
 class Messages extends React.Component {
   state = {
+    privateChannel: this.props.isPrivateChannel,
+    privateMessagesRef: firebase.database().ref('privetMessages'),
     messagesRef: firebase.database().ref('messages'),
     messages: [],
     messagesLoading: true,
@@ -34,7 +36,8 @@ class Messages extends React.Component {
 
   addMessageListener = (channelId) => {
     let loadedMessages = []
-    this.state.messagesRef.child(channelId).on('child_added', (snap) => {
+    const ref = this.getMessagesRef()
+    ref.child(channelId).on('child_added', (snap) => {
       loadedMessages.push(snap.val())
       this.setState({
         messages: loadedMessages,
@@ -84,7 +87,16 @@ class Messages extends React.Component {
     }, 500)
   }
 
-  displayChannelName = (channel) => (channel ? `#${channel.name}` : '')
+  getMessagesRef = () => {
+    const { messagesRef, privateMessagesRef, privateChannel } = this.state
+    return privateChannel ? privateMessagesRef : messagesRef
+  }
+
+  displayChannelName = (channel) => {
+    return channel
+      ? `${this.state.privateChannel ? '@' : '#'}${channel.name}`
+      : ''
+  }
 
   displayMessages = (messages) =>
     messages.length > 0 &&
@@ -112,6 +124,7 @@ class Messages extends React.Component {
       searchResult,
       searchTerm,
       searchLoading,
+      privateChannel,
     } = this.state
 
     return (
@@ -121,6 +134,7 @@ class Messages extends React.Component {
           numUniqueUsers={numUniqueUsers}
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
+          isPrivateChannel={privateChannel}
         />
 
         <Segment>
@@ -136,6 +150,7 @@ class Messages extends React.Component {
           currentChannel={channel}
           currentUser={user}
           isProgressBarVisible={this.isProgressBarVisible}
+          getMessagesRef={this.getMessagesRef}
         />
       </React.Fragment>
     )
