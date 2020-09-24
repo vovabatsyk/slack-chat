@@ -14,7 +14,9 @@ class Messages extends React.Component {
     messages: [],
     messagesLoading: true,
     channel: this.props.currentChannel,
+    isChannelStar: false,
     user: this.props.currentUser,
+    userRef: firebase.database().ref('users'),
     numUniqueUsers: 0,
     progressBar: false,
     searchTerm: '',
@@ -27,7 +29,22 @@ class Messages extends React.Component {
 
     if (channel && user) {
       this.addListeners(channel.id)
+      this.addStarredListeners(channel.id, user.uid)
     }
+  }
+
+  addStarredListeners = (channelId, userId) => {
+    this.state.userRef
+      .child(userId)
+      .child('starred')
+      .once('value')
+      .then(data => {
+        if(data.val() !== null) {
+          const channelIds = Object.keys(data.val())
+          const prevStarred = channelIds.includes(channelId)
+          this.setState({isChannelStar: prevStarred})
+        }
+      })
   }
 
   addListeners = (channelId) => {
@@ -45,6 +62,38 @@ class Messages extends React.Component {
       })
       this.countUniqueUsers(loadedMessages)
     })
+  }
+
+  handleStar = () => {
+    this.setState(prevState => ({
+      isChannelStar: !prevState.isChannelStar
+    }), () => this.starChannel())
+  }
+
+  starChannel = () => {
+    if(this.state.isChannelStar) {
+      this.state.userRef
+        .child(`${this.state.user.uid}/starred`)
+        .update({
+          [this.state.channel.id]: {
+            name: this.state.channel.name,
+            details: this.state.channel.details,
+            createdBy: {
+              name: this.state.channel.createdBy.name,
+              avatar: this.state.channel.createdBy.avatar
+            }
+          }
+        })
+    } else {
+      this.state.userRef
+        .child(`${this.state.user.uid}/starred`)
+        .child(this.state.channel.id)
+        .remove(err => {
+          if(err !== null) {
+            console.error(err)
+          }
+        })
+    }
   }
 
   countUniqueUsers = (messages) => {
@@ -125,6 +174,7 @@ class Messages extends React.Component {
       searchTerm,
       searchLoading,
       privateChannel,
+      isChannelStar
     } = this.state
 
     return (
@@ -135,6 +185,8 @@ class Messages extends React.Component {
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          isChannelStar={isChannelStar}
+          handleStar={this.handleStar}
         />
 
         <Segment>
