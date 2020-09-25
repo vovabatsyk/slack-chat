@@ -1,5 +1,7 @@
 import React from 'react'
 import { Segment, Comment } from 'semantic-ui-react'
+import { connect } from 'react-redux'
+import { setUserPosts } from '../../actions'
 import firebase from '../../firebase'
 
 import MessagesHeader from './MessagesHeader'
@@ -38,11 +40,11 @@ class Messages extends React.Component {
       .child(userId)
       .child('starred')
       .once('value')
-      .then(data => {
-        if(data.val() !== null) {
+      .then((data) => {
+        if (data.val() !== null) {
           const channelIds = Object.keys(data.val())
           const prevStarred = channelIds.includes(channelId)
-          this.setState({isChannelStar: prevStarred})
+          this.setState({ isChannelStar: prevStarred })
         }
       })
   }
@@ -61,35 +63,37 @@ class Messages extends React.Component {
         messagesLoading: false,
       })
       this.countUniqueUsers(loadedMessages)
+      this.countUserPosts(loadedMessages)
     })
   }
 
   handleStar = () => {
-    this.setState(prevState => ({
-      isChannelStar: !prevState.isChannelStar
-    }), () => this.starChannel())
+    this.setState(
+      (prevState) => ({
+        isChannelStar: !prevState.isChannelStar,
+      }),
+      () => this.starChannel()
+    )
   }
 
   starChannel = () => {
-    if(this.state.isChannelStar) {
-      this.state.userRef
-        .child(`${this.state.user.uid}/starred`)
-        .update({
-          [this.state.channel.id]: {
-            name: this.state.channel.name,
-            details: this.state.channel.details,
-            createdBy: {
-              name: this.state.channel.createdBy.name,
-              avatar: this.state.channel.createdBy.avatar
-            }
-          }
-        })
+    if (this.state.isChannelStar) {
+      this.state.userRef.child(`${this.state.user.uid}/starred`).update({
+        [this.state.channel.id]: {
+          name: this.state.channel.name,
+          details: this.state.channel.details,
+          createdBy: {
+            name: this.state.channel.createdBy.name,
+            avatar: this.state.channel.createdBy.avatar,
+          },
+        },
+      })
     } else {
       this.state.userRef
         .child(`${this.state.user.uid}/starred`)
         .child(this.state.channel.id)
-        .remove(err => {
-          if(err !== null) {
+        .remove((err) => {
+          if (err !== null) {
             console.error(err)
           }
         })
@@ -106,6 +110,21 @@ class Messages extends React.Component {
     const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0
     const numUniqueUsers = `${uniqueUsers.length} User${plural ? 's' : ''}`
     this.setState({ numUniqueUsers })
+  }
+
+  countUserPosts = (messages) => {
+    let userPosts = messages.reduce((acc, message) => {
+      if (message.user.name in acc) {
+        acc[message.user.name].count += 1
+      } else {
+        acc[message.user.name] = {
+          avatar: message.user.avatar,
+          count: 1,
+        }
+      }
+      return acc
+    }, {})
+    this.props.setUserPosts(userPosts)
   }
 
   handleSearchChange = (event) => {
@@ -174,7 +193,7 @@ class Messages extends React.Component {
       searchTerm,
       searchLoading,
       privateChannel,
-      isChannelStar
+      isChannelStar,
     } = this.state
 
     return (
@@ -209,4 +228,4 @@ class Messages extends React.Component {
   }
 }
 
-export default Messages
+export default connect(null, { setUserPosts })(Messages)
