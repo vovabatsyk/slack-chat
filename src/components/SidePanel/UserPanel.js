@@ -1,12 +1,12 @@
 import React from 'react'
 import firebase from '../../firebase'
-import { Grid, Header, Icon, Dropdown, Image } from 'semantic-ui-react'
+// prettier-ignore
+import { Grid, Header, Icon, Dropdown, Image} from "semantic-ui-react";
 
 class UserPanel extends React.Component {
   state = {
     user: this.props.currentUser,
   }
-
   dropdownOptions = () => [
     {
       key: 'user',
@@ -16,10 +16,6 @@ class UserPanel extends React.Component {
         </span>
       ),
       disabled: true,
-    },
-    {
-      key: 'avatar',
-      text: <span>Change Avatar</span>,
     },
     {
       key: 'signout',
@@ -36,7 +32,7 @@ class UserPanel extends React.Component {
 
   render() {
     const { user } = this.state
-    const {primaryColor} = this.props
+    const { primaryColor } = this.props
 
     return (
       <Grid style={{ background: primaryColor }}>
@@ -60,7 +56,7 @@ class UserPanel extends React.Component {
                 options={this.dropdownOptions()}
               />
             </Header>
-          </Grid.Row>
+          </Grid.Row>         
         </Grid.Column>
       </Grid>
     )
